@@ -6,3 +6,4 @@ admin.site.register(Property)
 admin.site.register(Tenant)
 admin.site.register(LeaseContract)
 admin.site.register(Payment)
+
