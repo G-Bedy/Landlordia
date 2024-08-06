@@ -23,6 +23,10 @@ class Owner(models.Model):
         verbose_name='Адрес владельца'
     )
 
+    class Meta:
+        verbose_name = 'Собственник'
+        verbose_name_plural = 'Собственники'
+
     def __str__(self):
         return self.user.username
 
@@ -97,6 +101,10 @@ class Property(models.Model):
         verbose_name='Единица измерения'
     )
 
+    class Meta:
+        verbose_name = 'Недвижимость'
+        verbose_name_plural = 'Недвижимость'
+
     def __str__(self):
         return f"{self.owner} - {self.property_type} - {self.address}"
 
@@ -123,6 +131,10 @@ class Tenant(models.Model):
         blank=True,
         verbose_name='Адрес арендатора'
     )
+
+    class Meta:
+        verbose_name = 'Арендатор'
+        verbose_name_plural = 'Арендаторы'
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
@@ -154,7 +166,7 @@ class LeaseContract(models.Model):
         help_text="Дата и время начала аренды",
         verbose_name='Дата начала аренды'
     )
-    end_date = models.models.DateTimeField(
+    end_date = models.DateTimeField(
         help_text="Дата и время окончания аренды",
         verbose_name='Дата окончания аренды'
     )
@@ -178,6 +190,10 @@ class LeaseContract(models.Model):
         help_text=("Сумма депозита (необязательное поле)"),
         verbose_name='Сумма депозита'
     )
+
+    class Meta:
+        verbose_name = 'Договор аренды'
+        verbose_name_plural = 'Договора аренды'
 
     def clean(self):
         """
@@ -209,10 +225,15 @@ class Payment(models.Model):
         decimal_places=2,
         verbose_name='Сумма платежа'
     )
-    payment_date = models.models.DateTimeField(
+    payment_date = models.DateTimeField(
         auto_now_add=True,
         verbose_name='Дата и время совершения платежа'
     )
+
+    class Meta:
+        verbose_name = 'Платеж'
+        verbose_name_plural = 'Платежи'
+
     def __str__(self):
         return (f"Оплата в размере {self.amount} рублей "
                 f"{self.payment_date} по {self.lease}")
