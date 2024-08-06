@@ -150,12 +150,12 @@ class LeaseContract(models.Model):
         help_text="Арендатор",
         verbose_name='Ссылка на арендатора'
     )
-    start_date = models.DateField(
-        help_text="Дата начала аренды",
+    start_date = models.DateTimeField(
+        help_text="Дата и время начала аренды",
         verbose_name='Дата начала аренды'
     )
-    end_date = models.DateField(
-        help_text="Дата окончания аренды",
+    end_date = models.models.DateTimeField(
+        help_text="Дата и время окончания аренды",
         verbose_name='Дата окончания аренды'
     )
     rent_amount = models.DecimalField(
@@ -209,8 +209,10 @@ class Payment(models.Model):
         decimal_places=2,
         verbose_name='Сумма платежа'
     )
-    payment_date = models.DateField(verbose_name='Дата совершения платежа')
-
+    payment_date = models.models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Дата и время совершения платежа'
+    )
     def __str__(self):
         return (f"Оплата в размере {self.amount} рублей "
                 f"{self.payment_date} по {self.lease}")
