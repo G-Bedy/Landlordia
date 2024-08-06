@@ -1,5 +1,5 @@
 from realestate.models import LeaseContract, Owner, Payment, Property, Tenant
-from realestate.serialisers import (LeaseContractSerializer, OwnerSerializer,
+from realestate.serializers import (LeaseContractSerializer, OwnerSerializer,
                                     PaymentSerializer, PropertySerializer,
                                     TenantSerializer)
 from rest_framework import generics
