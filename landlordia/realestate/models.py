@@ -1,6 +1,18 @@
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
+from realestate.constants import (
+    PROPERTY_TYPE_APARTMENT,
+    PROPERTY_TYPE_HOUSE,
+    PROPERTY_TYPE_COMMERCIAL,
+    PROPERTY_TYPE_LAND,
+    PERIOD_HOUR,
+    PERIOD_DAY,
+    PERIOD_MONTH,
+    RENTAL_TYPE_HOURLY,
+    RENTAL_TYPE_DAILY,
+    RENTAL_TYPE_LONG_TERM,
+)
 
 
 class Owner(models.Model):
@@ -36,22 +48,22 @@ class Property(models.Model):
     Модель Property, создание объекта недвижимости, принадлежащей собственнику.
     """
     PROPERTY_TYPE_CHOICES = [
-        ('Apartment', 'Квартира'),
-        ('House', 'Дом'),
-        ('Commercial', 'Коммерческая недвижимость'),
-        ('Land', 'Земельный участок')
+        (PROPERTY_TYPE_APARTMENT, 'Квартира'),
+        (PROPERTY_TYPE_HOUSE, 'Дом'),
+        (PROPERTY_TYPE_COMMERCIAL, 'Коммерческая недвижимость'),
+        (PROPERTY_TYPE_LAND, 'Земельный участок'),
     ]
 
     PERIOD_CHOICES = [
-        ('Hour', 'в час'),
-        ('Day', 'в сутки'),
-        ('Month', 'в месяц')
+        (PERIOD_HOUR, 'в час'),
+        (PERIOD_DAY, 'в сутки'),
+        (PERIOD_MONTH, 'в месяц'),
     ]
 
     RENTAL_TYPE_CHOICES = [
-        ('Hourly', 'Почасовая аренда'),
-        ('Daily', 'Посуточная аренда'),
-        ('LongTerm', 'Длительная аренда')
+        (RENTAL_TYPE_HOURLY, 'Почасовая аренда'),
+        (RENTAL_TYPE_DAILY, 'Посуточная аренда'),
+        (RENTAL_TYPE_LONG_TERM, 'Длительная аренда'),
     ]
 
     owner = models.ForeignKey(
