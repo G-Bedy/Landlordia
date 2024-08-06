@@ -1,33 +1,32 @@
+from realestate.models import LeaseContract, Owner, Payment, Property, Tenant
 from rest_framework import serializers
 
-from .models import *
 
-
-class OwnerSerialiser(serializers.ModelSerializer):
+class OwnerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Owner
         fields = '__all__'
 
 
-class PropertySerialiser(serializers.ModelSerializer):
+class PropertySerializer(serializers.ModelSerializer):
     class Meta:
         model = Property
         fields = '__all__'
 
 
-class TenantSerialiser(serializers.ModelSerializer):
+class TenantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tenant
         fields = '__all__'
 
 
-class LeaseContractSerialiser(serializers.ModelSerializer):
+class LeaseContractSerializer(serializers.ModelSerializer):
     class Meta:
         model = LeaseContract
         fields = '__all__'
 
 
-class PaymentSerialiser(serializers.ModelSerializer):
+class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
         fields = '__all__'

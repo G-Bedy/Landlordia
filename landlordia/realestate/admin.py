@@ -1,5 +1,7 @@
 from django.contrib import admin
-from .models import *
+
+from realestate.models import LeaseContract, Owner, Payment, Property, Tenant
+
 
 admin.site.register(Owner)
 admin.site.register(Property)

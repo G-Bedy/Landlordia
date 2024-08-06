@@ -1,6 +1,6 @@
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.contrib.auth.models import User
 
 
 class Owner(models.Model):
@@ -92,7 +92,8 @@ class Property(models.Model):
     minimum_rental_unit = models.CharField(
         max_length=5,
         choices=PERIOD_CHOICES,
-        help_text="Единица измерения минимального периода сдачи (часы, дни, месяцы)",
+        help_text="Единица измерения минимального периода сдачи "
+                  "(часы, дни, месяцы)",
         verbose_name='Единица измерения'
     )
 
@@ -104,11 +105,24 @@ class Tenant(models.Model):
     """
     Модель Tenant (Арендатор), создание объекта арендатора.
     """
-    first_name = models.CharField(max_length=50, verbose_name='Имя арендатора')
-    last_name = models.CharField(max_length=50, verbose_name='Фамилия арендатора')
-    email = models.EmailField(verbose_name='Электронная почта арендатора')
-    phone_number = models.CharField(max_length=15, blank=True, verbose_name='Номер телефона арендатора')
-    address = models.CharField(max_length=255, blank=True, verbose_name='Адрес арендатора')
+    first_name = models.CharField(
+        max_length=50,
+        verbose_name='Имя арендатора')
+    last_name = models.CharField(
+        max_length=50,
+        verbose_name='Фамилия арендатора')
+    email = models.EmailField(
+        verbose_name='Электронная почта арендатора')
+    phone_number = models.CharField(
+        max_length=15,
+        blank=True,
+        verbose_name='Номер телефона арендатора'
+    )
+    address = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name='Адрес арендатора'
+    )
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
@@ -166,10 +180,15 @@ class LeaseContract(models.Model):
         Валидация дат начала и окончания аренды.
         """
         if self.end_date < self.start_date:
-            raise ValidationError("Дата окончания аренды не может быть раньше даты начала аренды")
+            raise ValidationError("Дата окончания аренды не может "
+                                  "быть раньше даты начала аренды")
 
     def __str__(self):
-        return f"Договор аренды недвижимости по адресу: {self.property.address} с {self.start_date} по {self.end_date}, {self.rent_amount} рублей за {self.rent_period}, арендатор {self.tenant.first_name}"
+        return (f"Договор аренды недвижимости по адресу: "
+                f"{self.property.address} с {self.start_date} "
+                f"по {self.end_date}, {self.rent_amount} рублей "
+                f"за {self.rent_period}, "
+                f"арендатор {self.tenant.first_name}")
 
 
 class Payment(models.Model):
@@ -185,4 +204,5 @@ class Payment(models.Model):
     payment_date = models.DateField(verbose_name='Дата совершения платежа')
 
     def __str__(self):
-        return f"Оплата в размере {self.amount} рублей {self.payment_date} по {self.lease}"
+        return (f"Оплата в размере {self.amount} рублей "
+                f"{self.payment_date} по {self.lease}")
