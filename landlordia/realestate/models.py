@@ -158,7 +158,9 @@ class LeaseContract(models.Model):
         help_text="Дата окончания аренды",
         verbose_name='Дата окончания аренды'
     )
-    rent_amount = models.IntegerField(
+    rent_amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
         help_text="Сумма аренды",
         verbose_name='Сумма аренды'
     )
@@ -168,7 +170,9 @@ class LeaseContract(models.Model):
         help_text=("Период аренды (часы, сутки, месяцы)"),
         verbose_name='Период аренды'
     )
-    deposit_amount = models.IntegerField(
+    deposit_amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
         blank=True,
         null=True,
         help_text=("Сумма депозита (необязательное поле)"),
@@ -200,7 +204,11 @@ class Payment(models.Model):
         on_delete=models.CASCADE,
         verbose_name='Ссылка на договор аренды'
     )
-    amount = models.IntegerField(verbose_name='Сумма платежа')
+    amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        verbose_name='Сумма платежа'
+    )
     payment_date = models.DateField(verbose_name='Дата совершения платежа')
 
     def __str__(self):
