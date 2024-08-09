@@ -4,11 +4,15 @@ from realestate.views import (LeaseContractAPIList, LeaseContractAPIRUD,
                               PaymentAPIRUD, PropertyAPIList, PropertyAPIRUD,
                               TenantAPIList, TenantAPIRUD)
 
+
+app_name = 'realestate'
+
+
 urlpatterns = [
     path('ownerlist/', OwnerAPIList.as_view()),
     path('ownerdetail/<int:pk>/', OwnerAPIRUD.as_view()),
 
-    path('propertylist/', PropertyAPIList.as_view()),
+    path('propertylist/', PropertyAPIList.as_view(), name='property_list'),
     path('propertydetail/<int:pk>/', PropertyAPIRUD.as_view()),
 
     path('tenantlist/', TenantAPIList.as_view()),

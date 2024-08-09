@@ -68,7 +68,7 @@ class Property(models.Model):
     ]
 
     owner = models.ForeignKey(
-        Owner,
+        'users.CustomUser',
         on_delete=models.CASCADE,
         verbose_name='Владелец недвижимости'
     )
