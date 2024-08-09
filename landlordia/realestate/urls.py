@@ -1,7 +1,8 @@
 from django.urls import path
-
-from realestate.views import *
-
+from realestate.views import (LeaseContractAPIList, LeaseContractAPIRUD,
+                              OwnerAPIList, OwnerAPIRUD, PaymentAPIList,
+                              PaymentAPIRUD, PropertyAPIList, PropertyAPIRUD,
+                              TenantAPIList, TenantAPIRUD)
 
 urlpatterns = [
     path('ownerlist/', OwnerAPIList.as_view()),
