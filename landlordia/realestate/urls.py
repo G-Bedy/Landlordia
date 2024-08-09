@@ -15,8 +15,8 @@ urlpatterns = [
     path('propertylist/', PropertyAPIList.as_view(), name='property_list'),
     path('propertydetail/<int:pk>/', PropertyAPIRUD.as_view()),
 
-    path('tenantlist/', TenantAPIList.as_view()),
-    path('tenantdetail/<int:pk>/', TenantAPIRUD.as_view()),
+    path('tenant/', TenantAPIList.as_view()),
+    path('tenant/<int:pk>/', TenantAPIRUD.as_view()),
 
     path('leasecontractlist/', LeaseContractAPIList.as_view()),
     path('leasecontractdetail/<int:pk>/', LeaseContractAPIRUD.as_view()),

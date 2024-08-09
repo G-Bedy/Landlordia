@@ -18,7 +18,7 @@ from users.models import CustomUser
 
 class Owner(models.Model):
     """
-    Модель Owner, создание собственника недвижимости.
+    Модель Owner, создание собственника недвижимости. - DELETE
     """
     user = models.OneToOneField(
         CustomUser,
