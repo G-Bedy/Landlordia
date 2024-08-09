@@ -13,6 +13,7 @@ from realestate.constants import (
     RENTAL_TYPE_DAILY,
     RENTAL_TYPE_LONG_TERM,
 )
+from users.models import CustomUser
 
 
 class Owner(models.Model):
@@ -20,7 +21,7 @@ class Owner(models.Model):
     Модель Owner, создание собственника недвижимости.
     """
     user = models.OneToOneField(
-        User,
+        CustomUser,
         on_delete=models.CASCADE,
         verbose_name='Пользователь'
     )
@@ -40,7 +41,7 @@ class Owner(models.Model):
         verbose_name_plural = 'Собственники'
 
     def __str__(self):
-        return self.user.username
+        return self.user.name
 
 
 class Property(models.Model):
