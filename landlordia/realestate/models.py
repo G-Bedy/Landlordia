@@ -16,34 +16,6 @@ from realestate.constants import (
 from users.models import CustomUser
 
 
-class Owner(models.Model):
-    """
-    Модель Owner, создание собственника недвижимости.
-    """
-    user = models.OneToOneField(
-        CustomUser,
-        on_delete=models.CASCADE,
-        verbose_name='Пользователь'
-    )
-    phone_number = models.CharField(
-        max_length=15,
-        blank=True,
-        verbose_name='Номер телефона владельца'
-    )
-    address = models.CharField(
-        max_length=255,
-        blank=True,
-        verbose_name='Адрес владельца'
-    )
-
-    class Meta:
-        verbose_name = 'Собственник'
-        verbose_name_plural = 'Собственники'
-
-    def __str__(self):
-        return self.user.name
-
-
 class Property(models.Model):
     """
     Модель Property, создание объекта недвижимости, принадлежащей собственнику.
@@ -68,7 +40,7 @@ class Property(models.Model):
     ]
 
     owner = models.ForeignKey(
-        Owner,
+        CustomUser,
         on_delete=models.CASCADE,
         verbose_name='Владелец недвижимости'
     )

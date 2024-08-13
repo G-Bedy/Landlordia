@@ -1,15 +1,15 @@
-from realestate.models import LeaseContract, Owner, Payment, Property, Tenant
+from realestate.models import LeaseContract, Payment, Property, Tenant
 from rest_framework import serializers
 
 
-class OwnerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Owner
-        fields = [
-            'user',
-            'phone_number',
-            'address'
-        ]
+# class OwnerSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Owner
+#         fields = [
+#             'user',
+#             'phone_number',
+#             'address'
+#         ]
 
 
 class PropertySerializer(serializers.ModelSerializer):
@@ -26,6 +26,7 @@ class PropertySerializer(serializers.ModelSerializer):
             'minimum_rental_value',
             'minimum_rental_unit'
         ]
+        read_only_fields = ['owner',]
 
 
 class TenantSerializer(serializers.ModelSerializer):

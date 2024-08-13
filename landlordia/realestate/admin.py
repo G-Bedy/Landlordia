@@ -1,16 +1,7 @@
 from django.contrib import admin
 
-from realestate.models import LeaseContract, Owner, Payment, Property, Tenant
+from realestate.models import LeaseContract, Payment, Property, Tenant
 
-@admin.register(Owner)
-class OwnerAdmin(admin.ModelAdmin):
-    list_display = (
-        'user',
-        'phone_number',
-        'address'
-    )
-    search_fields = ('user__username',)
-    list_filter = ('user',)
 
 @admin.register(Property)
 class PropertyAdmin(admin.ModelAdmin):
