@@ -1,18 +1,12 @@
-from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
-from realestate.constants import (
-    PROPERTY_TYPE_APARTMENT,
-    PROPERTY_TYPE_HOUSE,
-    PROPERTY_TYPE_COMMERCIAL,
-    PROPERTY_TYPE_LAND,
-    PERIOD_HOUR,
-    PERIOD_DAY,
-    PERIOD_MONTH,
-    RENTAL_TYPE_HOURLY,
-    RENTAL_TYPE_DAILY,
-    RENTAL_TYPE_LONG_TERM,
-)
+
+from realestate.constants import (PERIOD_DAY, PERIOD_HOUR, PERIOD_MONTH,
+                                  PROPERTY_TYPE_APARTMENT,
+                                  PROPERTY_TYPE_COMMERCIAL,
+                                  PROPERTY_TYPE_HOUSE, PROPERTY_TYPE_LAND,
+                                  RENTAL_TYPE_DAILY, RENTAL_TYPE_HOURLY,
+                                  RENTAL_TYPE_LONG_TERM)
 from users.models import CustomUser
 
 
