@@ -9,17 +9,21 @@ from realestate.models import LeaseContract, Payment, Property, Tenant
 from users.models import CustomUser
 
 
-class PropertyAPITestCase(APITestCase):
+class UserMixin:
+    def create_and_login_user(self, email='testuser@mail.ru', password='12345', is_staff=False):
+        user = CustomUser.objects.create_user(email=email, password=password, is_staff=is_staff)
+        self.client.login(email=email, password=password)
+        return user
+
+    def create_and_login_admin(self, email='testuser@mail.ru', password='12345', is_staff=True):
+        user = CustomUser.objects.create_user(email=email, password=password, is_staff=is_staff)
+        self.client.login(email=email, password=password)
+        return user
+
+class PropertyAPITestCase(UserMixin, APITestCase):
 
     def setUp(self):
-        self.owner = CustomUser.objects.create_user(
-            email='testuser@mail.ru',
-            password='12345'
-        )
-        self.client.login(
-            email='testuser@mail.ru',
-            password='12345'
-        )
+        self.owner = self.create_and_login_user()
         self.property = Property.objects.create(
             owner=self.owner,
             address='Красная площадь дом 1',
@@ -96,21 +100,10 @@ class PropertyAPITestCase(APITestCase):
         self.assertEqual(Property.objects.count(), 0)
 
 
-class TenantAPITestCase(APITestCase):
+class TenantAPITestCase(UserMixin, APITestCase):
 
     def setUp(self):
-        self.owner = CustomUser.objects.create_user(
-            email='owner@mail.ru',
-            password='12345'
-        )
-        self.admin = CustomUser.objects.create_user(
-            email='admin@mail.ru',
-            password='12345', is_staff=True
-        )
-
-        # Снача вхожу как админ
-        self.client.login(email='admin@mail.ru', password='12345')
-
+        self.owner = self.create_and_login_admin()
         self.property = Property.objects.create(
             owner=self.owner,
             address='Красная площадь дом 1',
@@ -198,17 +191,10 @@ class TenantAPITestCase(APITestCase):
         self.assertEqual(Tenant.objects.count(), 0)
 
 
-class LeaseContractAPITestCase(APITestCase):
+class LeaseContractAPITestCase(UserMixin, APITestCase):
 
     def setUp(self):
-        self.owner = CustomUser.objects.create_user(
-            email='testuser@mail.ru',
-            password='12345'
-        )
-        self.client.login(
-            email='testuser@mail.ru',
-            password='12345'
-        )
+        self.owner = self.create_and_login_user()
         self.property = Property.objects.create(
             owner=self.owner,
             address='Красная площадь дом 1',
@@ -247,7 +233,6 @@ class LeaseContractAPITestCase(APITestCase):
 
     def test_get_leasecontract_list(self):
         """Тест на получение списка объектов LeaseContract"""
-        self.client.login(email='testuser@mail.ru', password='12345')
         response = self.client.get(self.url_list)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
@@ -264,14 +249,12 @@ class LeaseContractAPITestCase(APITestCase):
             'rent_period': 'Month',
             'deposit_amount': '90000.00'
         }
-        self.client.login(email='testuser@mail.ru', password='12345')
         response = self.client.post(self.url_list, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(LeaseContract.objects.count(), 2)
 
     def test_get_leasecontract_detail(self):
         """Тест на получение объекта LeaseContract"""
-        self.client.login(email='testuser@mail.ru', password='12345')
         response = self.client.get(self.url_detail)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['rent_amount'], '40000.00')
@@ -287,7 +270,6 @@ class LeaseContractAPITestCase(APITestCase):
             'rent_period': 'Month',
             'deposit_amount': 110000.00
         }
-        self.client.login(email='testuser@mail.ru', password='12345')
         response = self.client.put(self.url_detail, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.lease_contract.refresh_from_db()
@@ -295,7 +277,6 @@ class LeaseContractAPITestCase(APITestCase):
 
     def test_delete_leasecontract(self):
         """Тест на удаление объекта LeaseContract"""
-        self.client.login(email='testuser@mail.ru', password='12345')
         response = self.client.delete(self.url_detail)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(LeaseContract.objects.count(), 0)
@@ -311,7 +292,6 @@ class LeaseContractAPITestCase(APITestCase):
             'rent_period': 'Month',
             'deposit_amount': 90000.00
         }
-        self.client.login(email='testuser@mail.ru', password='12345')
         response = self.client.post(self.url_list, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn(
@@ -320,16 +300,9 @@ class LeaseContractAPITestCase(APITestCase):
         )
 
 
-class PaymentAPITestCase(APITestCase):
+class PaymentAPITestCase(UserMixin, APITestCase):
     def setUp(self):
-        self.owner = CustomUser.objects.create_user(
-            email='testuser@mail.ru',
-            password='12345'
-        )
-        self.client.login(
-            email='testuser@mail.ru',
-            password='12345'
-        )
+        self.owner = self.create_and_login_user()
         self.property = Property.objects.create(
             owner=self.owner,
             address='Красная площадь дом 1',
@@ -372,7 +345,6 @@ class PaymentAPITestCase(APITestCase):
 
     def test_get_payment_list(self):
         """Тест на получение списка платежей. Модель Payment."""
-        self.client.login(email='testuser@mail.ru', password='12345')
         response = self.client.get(self.url_list)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
