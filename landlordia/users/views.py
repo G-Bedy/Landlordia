@@ -7,16 +7,16 @@ from users.serializers import UserSerializer
 User = get_user_model()
 
 
-class UserListCreateView(generics.ListCreateAPIView):
+class UserRegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [permissions.AllowAny]
 
-    def get_permissions(self):
-        if self.request.method == 'POST':
-            self.permission_classes = [permissions.AllowAny]
-        else:
-            self.permission_classes = [permissions.IsAdminUser]
-        return super().get_permissions()
+
+class UserListView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAdminUser]
 
 
 class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
