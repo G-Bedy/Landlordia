@@ -1,58 +1,35 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 
+from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase
+from rest_framework.test import APIClient, APITestCase
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from realestate.models import LeaseContract, Payment, Property, Tenant
-from users.models import CustomUser
 
 
-class UserMixin:
-    def create_and_login_user(self,
-                              email='testuser@mail.ru',
-                              password='12345',
-                              is_staff=False):
-        user = CustomUser.objects.create_user(
-            email=email,
-            password=password,
-            is_staff=is_staff
-        )
-        self.client.login(email=email, password=password)
-        return user
+class BaseTestCase(APITestCase):
+    def setUp(self):
+        self.user = self.create_and_login_user()
+        self.client = APIClient()
+        refresh = RefreshToken.for_user(self.user)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {refresh.access_token}')
 
-    def create_and_login_admin(self,
-                               email='testuser@mail.ru',
-                               password='12345',
-                               is_staff=True):
-        user = CustomUser.objects.create_user(
-            email=email,
-            password=password,
-            is_staff=is_staff
-        )
-        self.client.login(email=email, password=password)
-        return user
-
-
-class PropertyMixin:
-    def create_property(self, owner):
-        return Property.objects.create(
-            owner=owner,
+        self.property = Property.objects.create(
+            owner=self.user,
             address='Красная площадь дом 1',
             property_type='Apartment',
             description='Тестовая квартира',
             rental_type='Hourly',
-            price=100500.00,
+            price=Decimal('100500.00'),
             price_period='Hour',
             minimum_rental_value=2,
             minimum_rental_unit='Hour'
         )
 
-
-class TenantMixin:
-    def create_tenant(self):
-        return Tenant.objects.create(
+        self.tenant = Tenant.objects.create(
             first_name='Иван',
             last_name='Иванов',
             email='ivan@mail.ru',
@@ -60,12 +37,9 @@ class TenantMixin:
             address='улица Тестовая'
         )
 
-
-class LeaseContractMixin:
-    def create_lease_contract(self, property, tenant):
-        return LeaseContract.objects.create(
-            property=property,
-            tenant=tenant,
+        self.lease_contract = LeaseContract.objects.create(
+            property=self.property,
+            tenant=self.tenant,
             start_date=datetime.now(),
             end_date=datetime.now() + timedelta(days=365),
             rent_amount=Decimal('40000.00'),
@@ -73,20 +47,24 @@ class LeaseContractMixin:
             deposit_amount=Decimal('70000.00')
         )
 
-
-class PaymentMixin:
-    def create_payment(self, lease):
-        return Payment.objects.create(
-            lease=lease,
-            amount=45000.00
+        self.payment = Payment.objects.create(
+            lease=self.lease_contract,
+            amount=Decimal('45000.00')
         )
 
+    def create_and_login_user(self, email='testuser@mail.ru', password='12345', is_staff=False):
+        user_model = get_user_model()
+        user = user_model.objects.create_user(email=email, password=password, is_staff=is_staff)
+        return user
 
-class PropertyAPITestCase(UserMixin, PropertyMixin, APITestCase):
+    def create_and_login_admin(self, email='adminuser@mail.ru', password='12345', is_staff=True):
+        return self.create_and_login_user(email=email, password=password, is_staff=is_staff)
+
+
+class PropertyAPITestCase(BaseTestCase, APITestCase):
 
     def setUp(self):
-        self.owner = self.create_and_login_user()
-        self.property = self.create_property(owner=self.owner)
+        super().setUp()
         self.url_list = reverse('realestate:property-list')
         self.url_detail = reverse(
             'realestate:property-detail',
@@ -151,17 +129,10 @@ class PropertyAPITestCase(UserMixin, PropertyMixin, APITestCase):
         self.assertEqual(Property.objects.count(), 0)
 
 
-class TenantAPITestCase(UserMixin, PropertyMixin, TenantMixin,
-                        LeaseContractMixin, APITestCase):
+class TenantAPITestCase(BaseTestCase, APITestCase):
 
     def setUp(self):
-        self.owner = self.create_and_login_admin()
-        self.property = self.create_property(owner=self.owner)
-        self.tenant = self.create_tenant()
-        self.lease_contract = self.create_lease_contract(
-            property=self.property,
-            tenant=self.tenant
-        )
+        super().setUp()
         self.url_list = reverse('realestate:tenant-list')
         self.url_detail = reverse(
             'realestate:tenant-detail',
@@ -219,17 +190,10 @@ class TenantAPITestCase(UserMixin, PropertyMixin, TenantMixin,
         self.assertEqual(Tenant.objects.count(), 0)
 
 
-class LeaseContractAPITestCase(UserMixin, PropertyMixin, TenantMixin,
-                               LeaseContractMixin, APITestCase):
+class LeaseContractAPITestCase(BaseTestCase, APITestCase):
 
     def setUp(self):
-        self.owner = self.create_and_login_user()
-        self.property = self.create_property(owner=self.owner)
-        self.tenant = self.create_tenant()
-        self.lease_contract = self.create_lease_contract(
-            property=self.property,
-            tenant=self.tenant
-        )
+        super().setUp()
         self.url_list = reverse('realestate:leasecontract-list')
         self.url_detail = reverse(
             'realestate:leasecontract-detail',
@@ -305,17 +269,9 @@ class LeaseContractAPITestCase(UserMixin, PropertyMixin, TenantMixin,
         )
 
 
-class PaymentAPITestCase(UserMixin, PropertyMixin, TenantMixin,
-                         LeaseContractMixin, PaymentMixin, APITestCase):
+class PaymentAPITestCase(BaseTestCase, APITestCase):
     def setUp(self):
-        self.owner = self.create_and_login_user()
-        self.property = self.create_property(owner=self.owner)
-        self.tenant = self.create_tenant()
-        self.lease_contract = self.create_lease_contract(
-            property=self.property,
-            tenant=self.tenant
-        )
-        self.payment = self.create_payment(lease=self.lease_contract)
+        super().setUp()
         self.url_list = reverse('realestate:payment-list')
         self.url_detail = reverse(
             'realestate:payment-detail',

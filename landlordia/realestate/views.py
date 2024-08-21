@@ -1,9 +1,9 @@
 from rest_framework import generics
 
 from realestate.models import LeaseContract, Payment, Property, Tenant
-from realestate.permissions import (IsAdminOrLeaseContractPropertyOwner,
-                                    IsAdminOrOwner,
-                                    IsAdminOrPaymentLeaseContractPropertyOwner)
+from realestate.permissions import (IsAdminOrLeaseContractOwner,
+                                    IsAdminOrOwner, IsAdminOrPaymentOwner,
+                                    IsTenantRelatedUser)
 from realestate.serializers import (LeaseContractSerializer, PaymentSerializer,
                                     PropertySerializer, TenantSerializer)
 
@@ -19,8 +19,6 @@ class PropertyAPIList(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
-        # ??? спросить: нужно ли прописывать
-        # этот метод если поле owner в read_only?
 
 
 class PropertyAPIRUD(generics.RetrieveUpdateDestroyAPIView):
@@ -35,10 +33,7 @@ class PropertyAPIRUD(generics.RetrieveUpdateDestroyAPIView):
 
 class TenantAPIList(generics.ListCreateAPIView):
     serializer_class = TenantSerializer
-    permission_classes = [IsAdminOrOwner, ]
-    # ??? спросить: нужно ли здесь и далее ниже по коду
-    # указывать permission_classes = [IsAdminOrOwner, ]
-    # если я прописываю get_queryset?
+    permission_classes = [IsTenantRelatedUser, ]
 
     def get_queryset(self):
         if self.request.user and self.request.user.is_staff:
@@ -51,7 +46,7 @@ class TenantAPIList(generics.ListCreateAPIView):
 
 class TenantAPIRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TenantSerializer
-    permission_classes = [IsAdminOrOwner, ]
+    permission_classes = [IsTenantRelatedUser, ]
 
     def get_queryset(self):
         if self.request.user and self.request.user.is_staff:
@@ -64,7 +59,7 @@ class TenantAPIRUD(generics.RetrieveUpdateDestroyAPIView):
 
 class LeaseContractAPIList(generics.ListCreateAPIView):
     serializer_class = LeaseContractSerializer
-    permission_classes = [IsAdminOrLeaseContractPropertyOwner, ]
+    permission_classes = [IsAdminOrLeaseContractOwner, ]
 
     def get_queryset(self):
         if self.request.user and self.request.user.is_staff:
@@ -76,7 +71,7 @@ class LeaseContractAPIList(generics.ListCreateAPIView):
 
 class LeaseContractAPIRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = LeaseContractSerializer
-    permission_classes = [IsAdminOrLeaseContractPropertyOwner, ]
+    permission_classes = [IsAdminOrLeaseContractOwner, ]
 
     def get_queryset(self):
         if self.request.user and self.request.user.is_staff:
@@ -88,7 +83,7 @@ class LeaseContractAPIRUD(generics.RetrieveUpdateDestroyAPIView):
 
 class PaymentAPIList(generics.ListCreateAPIView):
     serializer_class = PaymentSerializer
-    permission_classes = [IsAdminOrPaymentLeaseContractPropertyOwner, ]
+    permission_classes = [IsAdminOrPaymentOwner, ]
 
     def get_queryset(self):
         if self.request.user and self.request.user.is_staff:
@@ -101,7 +96,7 @@ class PaymentAPIList(generics.ListCreateAPIView):
 
 class PaymentAPIRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = PaymentSerializer
-    permission_classes = [IsAdminOrPaymentLeaseContractPropertyOwner, ]
+    permission_classes = [IsAdminOrPaymentOwner, ]
 
     def get_queryset(self):
         if self.request.user and self.request.user.is_staff:

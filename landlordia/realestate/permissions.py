@@ -1,5 +1,7 @@
 from rest_framework import permissions
 
+from realestate.models import LeaseContract
+
 
 class IsAdminOrOwner(permissions.BasePermission):
     """
@@ -17,7 +19,11 @@ class IsAdminOrOwner(permissions.BasePermission):
         return obj.owner == request.user
 
 
-class IsAdminOrLeaseContractPropertyOwner(permissions.BasePermission):
+class IsAdminOrLeaseContractOwner(permissions.BasePermission):
+    """
+    Проверяет, связан ли пользователь с объектом LeaseContract
+    через Property.
+    """
     def has_permission(self, request, view):
         if request.user and request.user.is_staff:
             return True
@@ -29,7 +35,11 @@ class IsAdminOrLeaseContractPropertyOwner(permissions.BasePermission):
         return obj.property.owner == request.user
 
 
-class IsAdminOrPaymentLeaseContractPropertyOwner(permissions.BasePermission):
+class IsAdminOrPaymentOwner(permissions.BasePermission):
+    """
+    Проверяет, связан ли пользователь с объектом Payment
+    через LeaseContract и Property.
+    """
     def has_permission(self, request, view):
         if request.user and request.user.is_staff:
             return True
@@ -39,3 +49,21 @@ class IsAdminOrPaymentLeaseContractPropertyOwner(permissions.BasePermission):
         if request.user and request.user.is_staff:
             return True
         return obj.lease.property.owner == request.user
+
+
+class IsTenantRelatedUser(permissions.BasePermission):
+    """
+    Проверяет, связан ли пользователь с объектом Tenant
+    через LeaseContract и Property.
+    """
+    def has_permission(self, request, view):
+        if request.user and request.user.is_staff:
+            return True
+        return request.user and request.user.is_authenticated
+
+    def has_object_permission(self, request, view, obj):
+        lease_contracts = LeaseContract.objects.filter(tenant=obj)
+        for lease in lease_contracts:
+            if lease.property.owner == request.user:
+                return True
+        return False
