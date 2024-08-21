@@ -1,46 +1,13 @@
-from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
-from realestate.constants import (
-    PROPERTY_TYPE_APARTMENT,
-    PROPERTY_TYPE_HOUSE,
-    PROPERTY_TYPE_COMMERCIAL,
-    PROPERTY_TYPE_LAND,
-    PERIOD_HOUR,
-    PERIOD_DAY,
-    PERIOD_MONTH,
-    RENTAL_TYPE_HOURLY,
-    RENTAL_TYPE_DAILY,
-    RENTAL_TYPE_LONG_TERM,
-)
 
-
-class Owner(models.Model):
-    """
-    Модель Owner, создание собственника недвижимости.
-    """
-    user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-        verbose_name='Пользователь'
-    )
-    phone_number = models.CharField(
-        max_length=15,
-        blank=True,
-        verbose_name='Номер телефона владельца'
-    )
-    address = models.CharField(
-        max_length=255,
-        blank=True,
-        verbose_name='Адрес владельца'
-    )
-
-    class Meta:
-        verbose_name = 'Собственник'
-        verbose_name_plural = 'Собственники'
-
-    def __str__(self):
-        return self.user.username
+from realestate.constants import (PERIOD_DAY, PERIOD_HOUR, PERIOD_MONTH,
+                                  PROPERTY_TYPE_APARTMENT,
+                                  PROPERTY_TYPE_COMMERCIAL,
+                                  PROPERTY_TYPE_HOUSE, PROPERTY_TYPE_LAND,
+                                  RENTAL_TYPE_DAILY, RENTAL_TYPE_HOURLY,
+                                  RENTAL_TYPE_LONG_TERM)
+from users.models import CustomUser
 
 
 class Property(models.Model):
@@ -67,7 +34,7 @@ class Property(models.Model):
     ]
 
     owner = models.ForeignKey(
-        Owner,
+        CustomUser,
         on_delete=models.CASCADE,
         verbose_name='Владелец недвижимости'
     )

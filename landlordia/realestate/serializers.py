@@ -1,15 +1,6 @@
-from realestate.models import LeaseContract, Owner, Payment, Property, Tenant
 from rest_framework import serializers
 
-
-class OwnerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Owner
-        fields = [
-            'user',
-            'phone_number',
-            'address'
-        ]
+from realestate.models import LeaseContract, Payment, Property, Tenant
 
 
 class PropertySerializer(serializers.ModelSerializer):
@@ -26,6 +17,7 @@ class PropertySerializer(serializers.ModelSerializer):
             'minimum_rental_value',
             'minimum_rental_unit'
         ]
+        read_only_fields = ['owner', ]
 
 
 class TenantSerializer(serializers.ModelSerializer):
@@ -52,6 +44,14 @@ class LeaseContractSerializer(serializers.ModelSerializer):
             'rent_period',
             'deposit_amount'
         ]
+
+    def validate(self, data):
+        """Проверка дат начала и окончания аренды."""
+        if data['end_date'] < data['start_date']:
+            raise serializers.ValidationError(
+                "Дата окончания аренды не может быть раньше даты начала аренды"
+            )
+        return data
 
 
 class PaymentSerializer(serializers.ModelSerializer):
