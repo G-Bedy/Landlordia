@@ -42,8 +42,11 @@ class LeaseContractSerializer(serializers.ModelSerializer):
             'end_date',
             'rent_amount',
             'rent_period',
-            'deposit_amount'
+            'deposit_amount',
+            'next_payment_date',
         ]
+
+    read_only_fields = ['next_payment_date']
 
     def validate(self, data):
         """Проверка дат начала и окончания аренды."""

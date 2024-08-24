@@ -48,7 +48,8 @@ class LeaseContractAdmin(admin.ModelAdmin):
         'end_date',
         'rent_amount',
         'rent_period',
-        'deposit_amount'
+        'deposit_amount',
+        'next_payment_date'
     )
     search_fields = (
         'property__address',
