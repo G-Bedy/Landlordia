@@ -1,3 +1,6 @@
+from datetime import timedelta
+
+from dateutil.relativedelta import relativedelta
 from django.core.exceptions import ValidationError
 from django.db import models
 
@@ -169,10 +172,45 @@ class LeaseContract(models.Model):
         help_text=("Сумма депозита (необязательное поле)"),
         verbose_name='Сумма депозита'
     )
+    next_payment_date = models.DateTimeField(
+        help_text="Дата следующего платежа",
+        verbose_name='Дата следующего платежа',
+        null=True,
+        blank=True
+    )
 
     class Meta:
         verbose_name = 'Договор аренды'
         verbose_name_plural = 'Договора аренды'
+
+    def save(self, *args, **kwargs):
+        if not self.next_payment_date:
+            if self.rent_period == 'Month':
+                self.next_payment_date = self.start_date + relativedelta(months=1)
+            elif self.rent_period == 'Day':
+                self.next_payment_date = self.start_date + timedelta(days=1)
+            elif self.rent_period == 'Hour':
+                self.next_payment_date = self.start_date + timedelta(hours=1)
+
+        super().save(*args, **kwargs)
+
+    def update_next_payment_date(self):
+        """
+        Обновляет next_payment_date на следующий период.
+        """
+        # по хорошему здесь еще нужно добавить проверку на оплату предыдущего платежа..."
+        # либо добавить в модели поле "задолженность"
+        if self.end_date and self.next_payment_date >= self.end_date:
+            return
+
+        if self.rent_period == 'Month':
+            self.next_payment_date += relativedelta(months=1)
+        elif self.rent_period == 'Day':
+            self.next_payment_date += timedelta(days=1)
+        elif self.rent_period == 'Hour':
+            self.next_payment_date += timedelta(hours=1)
+
+        self.save()
 
     def clean(self):
         """

@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
+from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.urls import reverse
@@ -207,7 +208,8 @@ class LeaseContractAPITestCase(BaseTestCase, APITestCase):
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]['rent_amount'], '40000.00')
 
-    def test_create_leasecontract(self):
+    @patch('realestate.views.send_contract_email.delay')
+    def test_create_leasecontract(self, mock_send_contract_email):
         """Тест на создание объекта LeaseContract"""
         data = {
             'property': self.property.id,
@@ -221,6 +223,7 @@ class LeaseContractAPITestCase(BaseTestCase, APITestCase):
         response = self.client.post(self.url_list, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(LeaseContract.objects.count(), 2)
+        mock_send_contract_email.assert_called_once()
 
     def test_get_leasecontract_detail(self):
         """Тест на получение объекта LeaseContract"""

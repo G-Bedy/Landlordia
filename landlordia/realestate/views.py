@@ -7,6 +7,8 @@ from realestate.permissions import (IsAdminOrLeaseContractOwner,
 from realestate.serializers import (LeaseContractSerializer, PaymentSerializer,
                                     PropertySerializer, TenantSerializer)
 
+from .tasks import send_contract_email
+
 
 class PropertyAPIList(generics.ListCreateAPIView):
     serializer_class = PropertySerializer
@@ -67,6 +69,12 @@ class LeaseContractAPIList(generics.ListCreateAPIView):
 
         properties = Property.objects.filter(owner=self.request.user)
         return LeaseContract.objects.filter(property__in=properties)
+
+    def perform_create(self, serializer):
+        lease_contract = serializer.save()
+        tenant_email = lease_contract.tenant.email
+        contract_details = str(lease_contract)
+        send_contract_email.delay(tenant_email, contract_details)
 
 
 class LeaseContractAPIRUD(generics.RetrieveUpdateDestroyAPIView):
