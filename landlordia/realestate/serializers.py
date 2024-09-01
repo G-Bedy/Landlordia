@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from rest_framework import serializers
 
 from realestate.models import LeaseContract, Payment, Property, Tenant
@@ -49,12 +51,31 @@ class LeaseContractSerializer(serializers.ModelSerializer):
     read_only_fields = ['next_payment_date']
 
     def validate(self, data):
-        """Проверка дат начала и окончания аренды."""
+        """Проверка даты начала и окончания аренды."""
         if data['end_date'] < data['start_date']:
             raise serializers.ValidationError(
                 "Дата окончания аренды не может быть раньше даты начала аренды"
             )
         return data
+
+    def validate_rent_amount(self, value):
+        """Проверка, что значение арендной платы не отрицательное."""
+        if value < 0:
+            raise serializers.ValidationError("Арендная плата не может быть отрицательной.")
+        return value
+
+    def validate_deposit_amount(self, value):
+        """Проверка, что значение депозита не отрицательное."""
+        if value < 0:
+            raise serializers.ValidationError("Сумма депозита не может быть отрицательной.")
+        return value
+
+    def validate_end_date(self, value):
+        """Проверка, что дата окончания аренды не раньше сегодняшней даты."""
+        today = datetime.now()
+        if value < today:
+            raise serializers.ValidationError("Дата окончания аренды не может быть раньше сегодняшнего дня.")
+        return value
 
 
 class PaymentSerializer(serializers.ModelSerializer):

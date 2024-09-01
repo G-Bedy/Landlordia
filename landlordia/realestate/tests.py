@@ -267,8 +267,8 @@ class LeaseContractAPITestCase(BaseTestCase, APITestCase):
         response = self.client.post(self.url_list, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn(
-            "Дата окончания аренды не может быть раньше даты начала аренды",
-            response.data['non_field_errors']
+            "Дата окончания аренды не может быть раньше сегодняшнего дня.",
+            response.data.get('end_date', [])
         )
 
 

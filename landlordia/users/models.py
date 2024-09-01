@@ -39,3 +39,17 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.get_full_name()
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='profile')
+    bio = models.TextField(blank=True, verbose_name='Биография')
+    address = models.CharField(max_length=255, blank=True, verbose_name='Адрес')
+    birth_date = models.DateField(null=True, blank=True, verbose_name='Дата рождения')
+
+    class Meta:
+        verbose_name = 'Профиль'
+        verbose_name_plural = 'Профили'
+
+    def __str__(self):
+        return f'Профиль пользователя {self.user.email}'
